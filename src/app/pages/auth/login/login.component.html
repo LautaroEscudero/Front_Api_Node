@@ -3,16 +3,30 @@
         <mat-card-content>
             <h1>Login</h1>
             <form [formGroup]="loginForm" (submit)="onLogin()">
+                <mat-form-field class="full-width-input">
+                    <input matInput formControlName="username"
+                        placeholder="Username" required type="text">
+                    <mat-error *ngIf="isValidField('username')">
+                        {{getErrorMessage('username')}}
+                    </mat-error>
+                </mat-form-field>
 
-           
-            <mat-form-field class="full-width-input">
-                <input matInput formControlName="username" placeholder="Username" required type="text">
-            </mat-form-field>
-            <mat-form-field class="full-width-input separator">
-                <input matInput formControlName="password" placeholder="Password" required type="password">
-            </mat-form-field>
-            <button mat-raised-button type="submit" color="primary">Login</button>
-        </form>
+                <mat-form-field class="full-width-input separator">
+                    <input matInput formControlName="password"
+                    [type]="hide? 'password': 'text'"
+                        placeholder="Password" required type="password">
+                    <button mat-icon-button matSuffix (click)="hide= !hide">
+                        <mat-icon>{{ hide ? "visibility_off" : "visibility"}} </mat-icon>
+                    </button>
+                    <mat-error *ngIf="isValidField('password')">
+                        {{getErrorMessage('password')}}
+                    </mat-error>
+                </mat-form-field>
+
+                <button
+                [disabled]="loginForm.invalid"
+                 mat-raised-button type="submit" color="primary">Login</button>
+            </form>
         </mat-card-content>
     </mat-card>
 </div>

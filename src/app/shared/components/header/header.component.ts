@@ -1,12 +1,15 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { AuthService } from '@app/pages/auth/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
+
+  private subscription: Subscription = new Subscription();
 
   isAdmin = false;
   isLogged = false;
@@ -16,7 +19,14 @@ export class HeaderComponent implements OnInit {
   constructor(private authSvc: AuthService) { }
 
   ngOnInit(): void {
-    this.authSvc.isLogged.subscribe( res => this.isLogged = res);
+
+    this.subscription.add(
+    this.authSvc.isLogged.subscribe( res => this.isLogged = res)
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   onToggleSidenav():void{
