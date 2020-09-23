@@ -1,6 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { AuthService } from '@app/pages/auth/auth.service';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-header',
@@ -10,8 +11,9 @@ import { Subscription } from 'rxjs';
 export class HeaderComponent implements OnInit, OnDestroy {
 
   private subscription: Subscription = new Subscription();
+  private destroy$ = new Subject<any>();
 
-  isAdmin = false;
+  isAdmin = null;
   isLogged = false;
   @Output()
   toggleSidenav = new EventEmitter<void>();
@@ -21,19 +23,24 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
 
     this.subscription.add(
-    this.authSvc.isLogged.subscribe( res => this.isLogged = res)
+      this.authSvc.isLogged.subscribe(res => this.isLogged = res)
     );
+
+    this.authSvc.IsAdmin$.pipe(
+      takeUntil(this.destroy$)
+    )
+      .subscribe((res) => (this.isAdmin = res));
   }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
 
-  onToggleSidenav():void{
+  onToggleSidenav(): void {
     this.toggleSidenav.emit();
   }
 
-  onLogout(){
+  onLogout() {
     this.authSvc.logout();
 
   }
